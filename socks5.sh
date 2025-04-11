@@ -24,9 +24,9 @@ retry_install() {
 # Banner
 clear
 echo -e "\e[96m╔═══════════════════════════════════════╗"
-echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥           ║"
-echo -e "╠═════════════════════════════════════════════╣"
-echo -e "║            CREATED BY DMSRYN                 ║"
+echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥      ║"
+echo -e "╠═══════════════════════════════════════╣"
+echo -e "║          CREATED BY DMSRYN           ║"
 echo -e "╚═══════════════════════════════════════╝\e[0m"
 sleep 1
 
@@ -44,10 +44,10 @@ read -p "👤 Username: " user
 read -s -p "🔑 Password: " pass
 echo -e "\n"
 
-# Buat file konfigurasi danted
+# Buat file konfigurasi danted (PORT = 8443)
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
-internal: ens3 port = 1080
+internal: ens3 port = 8443
 external: ens3
 method: username
 user.privileged: root
@@ -72,13 +72,8 @@ systemctl restart danted
 
 # Output info
 IP=$(curl -s ifconfig.me)
-echo -e "\n\e[92m🎉 SOCKS5 SERVER SIAP DIGUNAKAN!\e[0m"
-echo "═════════════════════════════════════════"
-echo "📡 IP     : $IP"
-echo "🔌 PORT   : 1080"
-echo "👤 USER   : $user"
-echo "🔑 PASS   : $pass"
-echo "═════════════════════════════════════════"
-echo -e "\e[96m🚀 Gunakan dengan bijak ya, jangan buat hal yang aneh-aneh...\e[0m"
-echo -e "\e[91m❗ Dilarang keras untuk aktivitas ilegal, spam, atau ngebobol bank online 😅\e[0m"
+echo -e "\n\e[92m🎉 SOCKS5 SERVER BERHASIL DIBUAT!\e[0m"
+echo -e "\e[96m📦 Detail:\e[0m"
+echo "$IP:8443:$user:$pass"
+echo -e "\n\e[91m🚫 Gunakan dengan bijak! Jangan lakukan hal ilegal, spam, atau iseng berbahaya.\e[0m"
 echo -e "\e[90m# CREATED BY DMSRYN - 2025\e[0m"
