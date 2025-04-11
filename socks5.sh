@@ -54,7 +54,7 @@ echo -e "\e[96m╔════════════════════�
 echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥           ║"
 echo -e "╠══════════════════════════════════════════╣"
 echo -e "║            CREATED BY DMSRYN                ║"
-echo -e "╚════════════════════════════════════════╝\e[0m"
+echo -e "╚═══════════════════════════════════════╝\e[0m"
 
 # Step: Update repo + animasi
 wait_for_apt
