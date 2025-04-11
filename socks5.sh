@@ -28,12 +28,28 @@ echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥      ║"
 echo -e "╠═══════════════════════════════════════╣"
 echo -e "║          CREATED BY DMSRYN           ║"
 echo -e "╚═══════════════════════════════════════╝\e[0m"
-sleep 1
 
-# Update & install dependencies
-echo "[🛰️ ] Update repository..."
-apt update -y >/dev/null 2>&1
+# Loading animation function
+show_loading() {
+    local pid=$1
+    local delay=0.15
+    local spinstr='|/-\'
+    echo -n "[🛰️ ] Update repository... "
+    while ps -p $pid > /dev/null 2>&1; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    echo " [✅ Done]"
+}
 
+# Jalankan apt update dengan animasi loading
+apt update -y >/dev/null 2>&1 &
+show_loading $!
+
+# Install dependencies
 retry_install dante-server
 retry_install curl
 retry_install net-tools
