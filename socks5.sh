@@ -24,9 +24,9 @@ retry_install() {
 # Banner
 clear
 echo -e "\e[96m╔═══════════════════════════════════════╗"
-echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥      ║"
-echo -e "╠═══════════════════════════════════════╣"
-echo -e "║      Dibuat oleh: dmsrynprsty         ║"
+echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥           ║"
+echo -e "╠═════════════════════════════════════════════╣"
+echo -e "║            CREATED BY DMSRYN                 ║"
 echo -e "╚═══════════════════════════════════════╝\e[0m"
 sleep 1
 
@@ -81,4 +81,4 @@ echo "🔑 PASS   : $pass"
 echo "═════════════════════════════════════════"
 echo -e "\e[96m🚀 Gunakan dengan bijak ya, jangan buat hal yang aneh-aneh...\e[0m"
 echo -e "\e[91m❗ Dilarang keras untuk aktivitas ilegal, spam, atau ngebobol bank online 😅\e[0m"
-echo -e "\e[90m# dmsrynprsty - 2025\e[0m"
+echo -e "\e[90m# CREATED BY DMSRYN - 2025\e[0m"
