@@ -24,7 +24,7 @@ retry_install() {
 # Banner
 clear
 echo -e "\e[96m╔═══════════════════════════════════════╗"
-echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥      ║"
+echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥     ║"
 echo -e "╠═══════════════════════════════════════╣"
 echo -e "║           Dibuat oleh: dmsryn         ║"
 echo -e "╚═══════════════════════════════════════╝\e[0m"
