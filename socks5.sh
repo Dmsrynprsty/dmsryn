@@ -1,42 +1,14 @@
 #!/bin/bash
 
-# Function: Tampilkan animasi loading saat proses berjalan
-show_loading() {
-    local pid=$1
-    local delay=0.15
-    local spinstr='|/-\'
-    echo -n "[🛰️ ] Update repository... "
-    while ps -p $pid > /dev/null 2>&1; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    echo " [✅ Done]"
-}
-
-# Function: Tunggu jika apt sedang dikunci proses lain
-wait_for_apt() {
-    while fuser /var/lib/dpkg/lock >/dev/null 2>&1 || \
-          fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || \
-          fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
-        echo "[⏳] Menunggu proses apt yang lain selesai..."
-        sleep 5
-    done
-}
-
-# Function: Install ulang jika gagal
+# Function: Retry apt install sampai berhasil
 retry_install() {
     local package=$1
     local max_retries=5
     local count=1
 
-    echo "[🔄] Menginstall paket: $package..."
-
+    echo -e "\n[🔄] Menginstall paket: $package..."
     until apt install -y "$package" >/dev/null 2>&1; do
         echo "[❌] Gagal install $package (Percobaan $count/$max_retries). Coba lagi bentar..."
-        wait_for_apt
         sleep 5
         ((count++))
         if [ $count -gt $max_retries ]; then
@@ -44,35 +16,35 @@ retry_install() {
             exit 1
         fi
     done
-
     echo "[✅] $package berhasil diinstall!"
 }
 
-# Banner
+# Banner awal
 clear
-echo -e "\e[96m╔══════════════════════════════════════════╗"
-echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥           ║"
-echo -e "╠══════════════════════════════════════════╣"
-echo -e "║            CREATED BY DMSRYN                ║"
-echo -e "╚══════════════════════════════════════════╝\e[0m"
+echo -e "\e[96m╔═══════════════════════════════════════╗"
+echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥       ║"
+echo -e "╠═══════════════════════════════════════╣"
+echo -e "║          CREATED BY DMSRYNPRSTY        ║"
+echo -e "╚═══════════════════════════════════════╝\e[0m"
+sleep 1
 
-# Step: Update repo + animasi
-wait_for_apt
-apt update -y >/dev/null 2>&1 &
-show_loading $!
+# Update repo (dengan animasi loading)
+echo -n "[🛰️ ] Update repository..."
+apt update -y >/dev/null 2>&1
+echo -e "  [✅ Done]"
 
-# Step: Install dependencies
+# Install dependencies
 retry_install dante-server
 retry_install curl
 retry_install net-tools
 
-# Prompt input
+# Input user/pass
 echo -e "\n\e[93m📲 Silakan masukkan detail akun SOCKS5 kamu:\e[0m"
 read -p "👤 Username: " user
 read -s -p "🔑 Password: " pass
 echo -e "\n"
 
-# Buat config danted (port 8443)
+# Buat file konfigurasi
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
 internal: ens3 port = 8443
@@ -91,18 +63,17 @@ socks pass {
 }
 EOF
 
-# Tambahkan user SOCKS
+# Tambah user
 useradd -m "$user"
 echo "$user:$pass" | chpasswd
 
 # Restart danted
 systemctl restart danted
 
-# Ambil IP VPS
+# Output
 IP=$(curl -s ifconfig.me)
-
-# Output info
-echo -e "\n\e[92m🎉 SOCKS5 SERVER BERHASIL DIBUAT!\e[0m"
-echo "$IP:8443:$user:$pass"
-echo -e "\n\e[91m🚫 Gunakan dengan bijak! Jangan untuk spam, ilegal, atau hal aneh-aneh ya bre...\e[0m"
-echo -e "\e[90m# Created by DMSRYN - 2025\e[0m"
+echo -e "\n\e[92m🎉 SOCKS5 SERVER SIAP DIGUNAKAN!\e[0m"
+echo "═════════════════════════════════════════"
+echo "➡️  $IP:8443:$user:$pass"
+echo "═════════════════════════════════════════"
+echo -e "\e[96m🚀 Gunakan dengan bijak ya, jangan buat hal aneh-aneh...\e[0m"
