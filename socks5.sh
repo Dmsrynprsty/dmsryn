@@ -6,7 +6,8 @@ retry_install() {
     local max_retries=5
     local count=1
 
-    echo -e "\n[🔄] Menginstall paket: $package..."
+    echo "[🔄] Menginstall paket: $package..."
+
     until apt install -y "$package" >/dev/null 2>&1; do
         echo "[❌] Gagal install $package (Percobaan $count/$max_retries). Coba lagi bentar..."
         sleep 5
@@ -16,35 +17,34 @@ retry_install() {
             exit 1
         fi
     done
+
     echo "[✅] $package berhasil diinstall!"
 }
 
-# Banner awal
+# Banner
 clear
 echo -e "\e[96m╔═══════════════════════════════════════╗"
-echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥       ║"
+echo -e "║       🔥 AUTO SOCKS5 INSTALLER 🔥      ║"
 echo -e "╠═══════════════════════════════════════╣"
-echo -e "║          CREATED BY DMSRYNPRSTY        ║"
+echo -e "║           Dibuat oleh: dmsryn         ║"
 echo -e "╚═══════════════════════════════════════╝\e[0m"
 sleep 1
 
-# Update repo (dengan animasi loading)
-echo -n "[🛰️ ] Update repository..."
+# Update & install dependencies
+echo "[🛰️ ] Update repository..."
 apt update -y >/dev/null 2>&1
-echo -e "  [✅ Done]"
 
-# Install dependencies
 retry_install dante-server
 retry_install curl
 retry_install net-tools
 
-# Input user/pass
+# Prompt user
 echo -e "\n\e[93m📲 Silakan masukkan detail akun SOCKS5 kamu:\e[0m"
 read -p "👤 Username: " user
 read -s -p "🔑 Password: " pass
 echo -e "\n"
 
-# Buat file konfigurasi
+# Buat file konfigurasi danted
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
 internal: ens3 port = 8443
@@ -67,13 +67,18 @@ EOF
 useradd -m "$user"
 echo "$user:$pass" | chpasswd
 
-# Restart danted
+# Restart service
 systemctl restart danted
 
-# Output
+# Output info
 IP=$(curl -s ifconfig.me)
 echo -e "\n\e[92m🎉 SOCKS5 SERVER SIAP DIGUNAKAN!\e[0m"
 echo "═════════════════════════════════════════"
-echo "➡️  $IP:8443:$user:$pass"
+echo "📡 IP     : $IP"
+echo "🔌 PORT   : 8443"
+echo "👤 USER   : $user"
+echo "🔑 PASS   : $pass"
 echo "═════════════════════════════════════════"
-echo -e "\e[96m🚀 Gunakan dengan bijak ya, jangan buat hal aneh-aneh...\e[0m"
+echo -e "\e[96m🚀 Gunakan dengan bijak ya, jangan buat hal yang aneh-aneh...\e[0m"
+echo -e "\e[91m❗ Dilarang keras untuk aktivitas ilegal, spam, atau ngebobol bank online 😅\e[0m"
+echo -e "\e[90m# dmsrynprsty - 2025\e[0m"
