@@ -1,24 +1,42 @@
 #!/bin/bash
 
 clear
-echo "Updating system"
-apt update -y >/dev/null 2>&1
-apt install -y dante-server net-tools curl >/dev/null 2>&1
 
+# === [AUTO RERUN HANDLER] ===
+if [ ! -f /tmp/socks_installed.flag ]; then
+    echo "[+] Instalasi awal dependensi... sabar bre 🛠️"
+    apt update -y >/dev/null 2>&1
+    apt install -y dante-server net-tools curl dialog tzdata locales procps >/dev/null 2>&1
+
+    # Tandai instalasi sudah dilakukan
+    touch /tmp/socks_installed.flag
+
+    echo "[+] Instalasi selesai. Script akan dijalankan ulang untuk melanjutkan 🔁"
+    sleep 1
+    exec bash "$0" # Re-run script
+    exit
+fi
+
+# === [INPUT USER & PASS] ===
 echo "========================================"
 echo "   MASUKKAN USER DAN PASS NYA BRE!!!"
 echo "========================================"
+
+exec < /dev/tty
 read -p "Enter username: " user
 read -s -p "Enter password: " pass
 echo ""
 echo "========================================"
 
-useradd -m $user >/dev/null 2>&1
+# === [USER SETUP] ===
+useradd -m "$user" >/dev/null 2>&1
 echo "$user:$pass" | chpasswd
 
+# === [NETWORK SETUP] ===
 iface=$(ip route get 1.1.1.1 | awk '{print $5; exit}')
 vpsip=$(curl -s ifconfig.me)
 
+# === [DANTED CONFIG] ===
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
 internal: $iface port = 8443
@@ -39,9 +57,11 @@ socks pass {
 }
 EOF
 
+# === [START DANTED] ===
 systemctl restart danted
 
-echo "   AUTO SOCKS BY DMSRYN 🔥"
+# === [OUTPUT INFO] ===
+echo "   AUTO SOCKS5 BY DMSRYN 🔥"
 echo "========================================"
 echo "SOCKS : $vpsip:8443:$user:$pass"
 echo "========================================"
