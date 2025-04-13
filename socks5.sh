@@ -2,22 +2,13 @@
 
 clear
 
-# === [AUTO RERUN HANDLER] ===
-if [ ! -f /tmp/socks_installed.flag ]; then
-    echo "[+] Instalasi awal dependensi... sabar bre 🛠️"
-    apt update -y >/dev/null 2>&1
-    apt install -y dante-server net-tools curl dialog tzdata locales procps >/dev/null 2>&1
+echo "[+] MULAI INSTALL ULANG SETIAP JALAN! 🔁"
+echo "[+] Proses install dante-server, net-tools, curl, dll..."
 
-    # Tandai instalasi sudah dilakukan
-    touch /tmp/socks_installed.flag
+apt update -y >/dev/null 2>&1
+apt install -y dante-server net-tools curl dialog tzdata locales procps >/dev/null 2>&1
 
-    echo "[+] Instalasi selesai. Script akan dijalankan ulang untuk melanjutkan 🔁"
-    sleep 1
-    exec bash "$0" # Re-run script
-    exit
-fi
-
-# === [INPUT USER & PASS] ===
+# === INPUT USER & PASS ===
 echo "========================================"
 echo "   MASUKKAN USER DAN PASS NYA BRE!!!"
 echo "========================================"
@@ -28,15 +19,15 @@ read -s -p "Enter password: " pass
 echo ""
 echo "========================================"
 
-# === [USER SETUP] ===
+# === USER SETUP ===
 useradd -m "$user" >/dev/null 2>&1
 echo "$user:$pass" | chpasswd
 
-# === [NETWORK SETUP] ===
+# === NETWORK SETUP ===
 iface=$(ip route get 1.1.1.1 | awk '{print $5; exit}')
 vpsip=$(curl -s ifconfig.me)
 
-# === [DANTED CONFIG] ===
+# === CONFIG DANTED ===
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
 internal: $iface port = 8443
@@ -57,10 +48,15 @@ socks pass {
 }
 EOF
 
-# === [START DANTED] ===
-systemctl restart danted
+# === JALANKAN SERVICE ===
+if systemctl list-units --type=service | grep -q 'sockd.service'; then
+    systemctl restart sockd
+else
+    echo "[!] Gagal menemukan service sockd. Mungkin instalasi gagal."
+    exit 1
+fi
 
-# === [OUTPUT INFO] ===
+# === OUTPUT ===
 echo "   AUTO SOCKS5 BY DMSRYN 🔥"
 echo "========================================"
 echo "SOCKS : $vpsip:8443:$user:$pass"
