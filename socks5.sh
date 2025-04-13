@@ -48,13 +48,31 @@ socks pass {
 }
 EOF
 
-# === JALANKAN SERVICE ===
-if systemctl list-units --type=service | grep -q 'sockd.service'; then
-    systemctl restart sockd
-else
-    echo "[!] Gagal menemukan service sockd. Mungkin instalasi gagal."
-    exit 1
+# === BUAT SERVICE sockd JIKA BELUM ADA ===
+if [ ! -f /etc/systemd/system/sockd.service ]; then
+    echo "[+] Membuat service sockd secara manual..."
+    cat > /etc/systemd/system/sockd.service <<EOF
+[Unit]
+Description=Dante SOCKS5 Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/sockd -f /etc/danted.conf
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reexec
+    systemctl daemon-reload
+    systemctl enable sockd
 fi
+
+# === JALANKAN SERVICE ===
+systemctl restart sockd
 
 # === OUTPUT ===
 echo "   AUTO SOCKS5 BY DMSRYN 🔥"
