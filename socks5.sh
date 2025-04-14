@@ -9,6 +9,7 @@ echo "========================================"
 echo "   MASUKKAN USER DAN PASS NYA BRE!!!"
 echo "========================================"
 
+exec < /dev/tty
 read -p "Enter username: " user
 read -s -p "Enter password: " pass
 echo ""
