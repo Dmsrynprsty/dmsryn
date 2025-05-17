@@ -3,7 +3,7 @@
 clear
 echo "Updating system..."
 apt update -y >/dev/null 2>&1
-apt install -y dante-server net-tools curl ufw >/dev/null 2>&1
+apt install -y dante-server net-tools curl >/dev/null 2>&1
 
 echo "========================================"
 echo "   MASUKKAN USER DAN PASS NYA BRE!!!"
@@ -15,15 +15,12 @@ read -s -p "Enter password: " pass
 echo ""
 echo "========================================"
 
-# Buat user
-useradd -m "$user" >/dev/null 2>&1
+useradd -m $user >/dev/null 2>&1
 echo "$user:$pass" | chpasswd
 
-# Ambil interface aktif dan IP VPS
 iface=$(ip route get 1.1.1.1 | awk '{print $5; exit}')
 vpsip=$(curl -s ifconfig.me)
 
-# Buat file konfigurasi danted
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
 internal: 0.0.0.0 port = 8443
@@ -36,33 +33,18 @@ user.libwrap: nobody
 client pass {
     from: 0.0.0.0/0 to: 0.0.0.0/0
     log: connect disconnect error
-    method: username
 }
 
 socks pass {
     from: 0.0.0.0/0 to: 0.0.0.0/0
     log: connect disconnect error
-    method: username
 }
 EOF
 
-# Buka port di firewall
-ufw allow 8443/tcp >/dev/null 2>&1 || iptables -I INPUT -p tcp --dport 8443 -j ACCEPT
-
-# Restart danted dan enable autostart
 systemctl restart danted
-systemctl enable danted >/dev/null 2>&1
 
-# Output hasil
-echo ""
-echo "   ✅ AUTO SOCKS5 by DMSRYN 🔥"
+echo "   AUTO SOCKS BY DMSRYN 🔥"
 echo "========================================"
-echo " SOCKS5 INFO:"
-echo " IP       : $vpsip"
-echo " PORT     : 8443"
-echo " USER     : $user"
-echo " PASS     : $pass"
+echo "SOCKS : $vpsip:8443:$user:$pass"
 echo "========================================"
 echo "   GUNAKAN DENGAN BIJAK YA BREEE :)"
-echo ""
-
