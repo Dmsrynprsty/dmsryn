@@ -31,7 +31,7 @@ vpsip=$(curl -s ifconfig.me)
 
 cat > /etc/danted.conf <<EOF
 logoutput: syslog
-internal: 0.0.0.0 port = 8443
+internal: 0.0.0.0 port = 44445
 external: $iface
 method: username
 user.privileged: root
