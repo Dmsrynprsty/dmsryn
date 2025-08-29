@@ -53,6 +53,6 @@ systemctl restart danted
 
 echo "   AUTO SOCKS BY DMSRYN 🔥"
 echo "========================================"
-echo "SOCKS : $vpsip:8443:$user:$pass"
+echo "SOCKS : $vpsip:44445:$user:$pass"
 echo "========================================"
 echo "   GUNAKAN DENGAN BIJAK YA BREEE :)"
